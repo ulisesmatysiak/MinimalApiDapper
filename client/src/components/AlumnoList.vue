@@ -16,31 +16,28 @@
 </template>
 
 <script>
-  import { ref, onMounted } from 'vue';
+
   import { api } from '../services/api';
 
   export default {
-    emits: ['edit'],
+    props: {
+      alumnos: {
+        type: Array,
+        required: true
+      }
+    },
+    emits: ['edit', 'deleted'],
     setup(_, { emit }) {
-      const alumnos = ref([]);
-
-      const fetchAlumnos = async () => {
-        const response = await api.fetchAlumnos();
-        alumnos.value = response;
-      };
-
       const deleteAlumno = async (codigo) => {
         await api.deleteAlumno(codigo);
-        alumnos.value = alumnos.value.filter(alumno => alumno.codigo !== codigo);
+        emit('deleted');
       };
 
       const onEdit = (alumno) => {
         emit('edit', alumno);
       };
 
-      onMounted(fetchAlumnos);
-
-      return { alumnos, deleteAlumno, onEdit };
+      return { deleteAlumno, onEdit };
     }
   };
 </script>
